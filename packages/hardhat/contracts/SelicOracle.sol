@@ -107,7 +107,7 @@ contract SelicRateOracle is FunctionsClient, ConfirmedOwner {
         uint64 subscriptionId,
         uint32 gasLimit,
         bytes32 donID
-    ) external onlyOwner returns (bytes32 requestId) {
+    ) external returns (bytes32 requestId) {
         s_lastRequestId = _sendRequest(
             request,
             subscriptionId,

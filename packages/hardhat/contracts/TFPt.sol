@@ -167,7 +167,7 @@ contract TFPt is ERC20Burnable, Ownable, DSMath {
         return (rate.integerPart, rate.decimalPart);
     }
 
-    function updateCurrentPrice() external onlyOwner {
+    function updateCurrentPrice() external {
 
     ISelicRateOracle.Rate memory rate = selicRateOracle.getRate();
 
