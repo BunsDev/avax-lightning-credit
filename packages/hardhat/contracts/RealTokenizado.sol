@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract RealTokenizado is ERC20, ERC20Burnable, Ownable {
 	mapping(address => bool) public privilegedAccounts; //Servicos gov e bancos;
 
-	constructor() ERC20("RealTokenizado", "BRLt") Ownable() {
+	constructor() ERC20("RealTokenizado", "BRLt") Ownable(msg.sender) {
 		privilegedAccounts[msg.sender] = true;
 	}
 
