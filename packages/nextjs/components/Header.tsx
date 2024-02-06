@@ -16,7 +16,7 @@ export const menuLinks: HeaderMenuLink[] = [
     icon: "",
   },
   {
-    label: "Solicitar crédito",
+    label: "Ask for a Loan",
     href: "/credit-request",
     icon: "",
   },
@@ -79,7 +79,8 @@ export const Header = () => {
         </div>
         <Link href="/" passHref className="hidden lg:flex items-center gap-2 ml-4 mr-6 shrink-0">
           <div className="flex flex-col">
-            <span className="font-semibold text-3xl leading-tight">RGBANK</span>
+            <span className="font-semibold text-3xl text-center leading-tight">ALC</span>
+            <span className="text-xs">Avalanche Lightning Credit</span>
           </div>
         </Link>
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">

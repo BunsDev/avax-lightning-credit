@@ -43,20 +43,20 @@ const SuccessScreen: NextPage = () => {
               clipRule="evenodd"
             ></path>
           </svg>
-          <h1 className="text-3xl mt-4">Empréstimo realizado com sucesso</h1>
+          <h1 className="text-3xl mt-4">Loan Successfully Granted</h1>
           <div className="flex flex-col items-center text-center my-2">
-            <p className="text-xl my-2 text-neutral-500">Você acabou de receber um empréstimo de</p>
+            <p className="text-xl my-2 text-neutral-500">You have just received a loan of</p>
             <p className="text-xl text-semibold my-0">{formatValue(totalValue)}</p>
           </div>
           <Link href="/" className="bg-primary hover:bg-base-200 font-large rounded-md text-sm px-20 py-2.5 my-2">
-            Página Inicial
+            Home Page
           </Link>
 
           <Link
             href="/credit-request"
             className="bg-base-300 hover:bg-base-200 font-medium rounded-md text-sm px-10 py-2.5"
           >
-            Novo empréstimo
+            New Loan
           </Link>
         </div>
       </div>

@@ -36,20 +36,20 @@ const CreditRequest: NextPage = () => {
             />
           </div>
 
-          <div className="flex flex-col items-left text-left w-1/2 pb-4">
-            <h1 className="text-4xl">Empréstimo com garantia no Tesouro Direto</h1>
+          <div className="flex flex-col items-left text-center w-1/2 pb-4">
+            <h1 className="text-4xl">Loans guaranteed by the National Treasury of Brazil</h1>
 
-            <h2 className="text-2xl">Você investe no Tesouro? Esse empréstimo é para você!</h2>
+            <h2 className="text-2xl">Do you invest in government bonds? This loan is for you!</h2>
 
             <p className="text-justify mt-0 mb-0">
-              Agora você pode usar seus títulos do Tesouro Direto (Selic, IPCA+, Prefixado) para pegar um empréstimo. E
-              o melhor: você pode usar seus investimentos de qualquer banco ou instituição financeira para isso!
+              Now you can use your Treasury Bonds (Selic, IPCA+, Prefixado) to get a loan. And the best part: you can
+              use your investments from any bank or financial institution you prefer!
             </p>
           </div>
 
           <div className="flex flex-col items-center pb-4 w-1/2 sm:wd-3/4">
             <div className="flex flex-col items-center pb-4 mb-4 bg-base-200 rounded-md focus:outline-none focus:border-blue-500 w-full">
-              <span className="mt-2">Digite o valor que deseja pegar emprestado</span>
+              <span className="mt-2">Type the value you wish to get</span>
               <input
                 className="px-2 pt-4 pb-2 text-center text-xl bg-base-200 focus:outline-none focus:border-blue-500 w-full"
                 type="text"
@@ -61,34 +61,33 @@ const CreditRequest: NextPage = () => {
             <div className="flex flex-row justify-evenly bg-base-200 px-5 py-2 w-full rounded-2xl">
               <div className="px-4 text-left">
                 <div className="flex flex-row gap-2 justify-center items-start">
-                  <TicketIcon className="w-4 h-4 mt-5" /> {/* Placeholder icon for 'Prazo' */}
-                  <p className="font-bold">Empréstimo</p> {/* Bold text */}
+                  <TicketIcon className="w-4 h-4 mt-5" />
+                  <p className="font-bold">Loans</p>
                 </div>
-                <p className="mt-0">a partir de R$99,99</p>
+                <p className="mt-0">from R$99,99</p>
               </div>
 
               <div className="px-4 text-left">
                 <div className="flex flex-row gap-2 justify-center items-start">
-                  <ClockIcon className="w-4 h-4 mt-5" /> {/* Placeholder icon for 'Prazo' */}
-                  <p className="font-bold">Prazo</p> {/* Bold text */}
+                  <ClockIcon className="w-4 h-4 mt-5" />
+                  <p className="font-bold">Term</p>
                 </div>
-                <p className="mt-0">3 a 240 meses</p>
+                <p className="mt-0">up to 240 months</p>
               </div>
 
               <div className="px-4 text-left">
                 <div className="flex flex-row gap-2 justify-center items-start">
-                  <BanknotesIcon className="w-4 h-4 mt-5" /> {/* Placeholder icon for 'Juros' */}
-                  <p className="font-bold">Juros</p> {/* Bold text */}
+                  <BanknotesIcon className="w-4 h-4 mt-5" />
+                  <p className="font-bold">Interest rates</p>
                 </div>
-                <p className="mt-0">a partir de 0,5% a.m.</p>
+                <p className="mt-0">from 0,5% per month</p>
               </div>
             </div>
 
             <div className="flex flex-col items-center mt-4">
-              {/* Wrap the input and button in a form element */}
               <form
                 onSubmit={e => {
-                  e.preventDefault(); // Prevent the default form submission
+                  e.preventDefault(); // Prevent the default form submissio
                   handleSubmit(e); // Pass the event to handleSubmit
                 }}
               >
@@ -96,7 +95,7 @@ const CreditRequest: NextPage = () => {
                   type="submit"
                   className="bg-base-300 hover:bg-base-200 font-medium rounded-md text-sm px-10 py-2.5"
                 >
-                  Solicitar empréstimo
+                  Apply for a loan
                 </button>
               </form>
             </div>

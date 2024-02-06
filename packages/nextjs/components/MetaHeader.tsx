@@ -14,8 +14,8 @@ type MetaHeaderProps = {
 const baseUrl = process.env.NEXT_PUBLIC_VERCEL_URL ? `https://${process.env.NEXT_PUBLIC_VERCEL_URL}/` : "/";
 
 export const MetaHeader = ({
-  title = "Credpix",
-  description = "Um projeto do grupo RGP",
+  title = "Avalanche Lightning Credit",
+  description = "A RGP Group project to help people get loans using their Treasury Bonds as collateral",
   image = "thumbnail.jpg",
   twitterCard = "summary_large_image",
   children,

@@ -70,7 +70,7 @@ const TitleSelection: NextPage = () => {
     // Carregar a chave privada do arquivo .env
     const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY;
     if (privateKey == null) {
-      throw new Error("Chave privada não definida no .env");
+      throw new Error("Undefined private key on .env");
     }
 
     // Configurar o provedor e a carteira
@@ -153,9 +153,9 @@ const TitleSelection: NextPage = () => {
         <div className="flex flex-col bg-base-100 px-5 py-5 text-center items-center w-3/4 rounded-xl">
           <div className="flex flex-row py-4 justify-between w-full px-10">
             <div className="flex flex-col items-start text-left">
-              <h1 className="text-4xl mb-0">Títulos do Tesouro Direto para utilizar</h1>
+              <h1 className="text-4xl mb-0">Treasury Bonds to Use</h1>
 
-              <p className="text-2xl my-2 text-zinc-500">Selecione títulos para deixar como garantia do empréstimo</p>
+              <p className="text-2xl my-2 text-zinc-500">Select titles to leave as loan collateral</p>
             </div>
 
             <div className="flex flex-col items-end text-right">
@@ -174,7 +174,7 @@ const TitleSelection: NextPage = () => {
                   isLoading ? "opacity-50" : ""
                 }`}
               >
-                {isLoading ? "Processando..." : "Feito"}
+                {isLoading ? "Processing..." : "Done"}
               </button>
             </div>
           </div>
@@ -185,11 +185,11 @@ const TitleSelection: NextPage = () => {
                 <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                   <tr>
                     <th scope="col" className="px-6 py-3">
-                      Título
+                      Title
                     </th>
                     <th scope="col" className="px-6 py-3">
                       <div className="flex items-center">
-                        Instituição
+                        Institution
                         <Link href="#">
                           <svg
                             className="w-3 h-3 ms-1.5"
@@ -205,7 +205,7 @@ const TitleSelection: NextPage = () => {
                     </th>
                     <th scope="col" className="px-6 py-3">
                       <div className="flex items-center">
-                        Rentabilidade anual
+                        Annual Yield
                         <Link href="#">
                           <svg
                             className="w-3 h-3 ms-1.5"
@@ -221,7 +221,7 @@ const TitleSelection: NextPage = () => {
                     </th>
                     <th scope="col" className="px-6 py-3">
                       <div className="flex items-center">
-                        Saldo
+                        Balance
                         <Link href="#">
                           <svg
                             className="w-3 h-3 ms-1.5"
@@ -237,7 +237,7 @@ const TitleSelection: NextPage = () => {
                     </th>
                     <th scope="col" className="px-6 py-3">
                       <div className="flex items-center">
-                        Valor a utilizar
+                        Amount to use
                         <Link href="#">
                           <svg
                             className="w-3 h-3 ms-1.5"
@@ -278,8 +278,8 @@ const TitleSelection: NextPage = () => {
                   <tr className="bg-gray-200">
                     <th scope="row" className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
                       <div>
-                        <p>Empréstimo desejado</p>
-                        <p className="font-bold text-lg">Valor usado como garantia</p>
+                        <p>Desired Loan</p>
+                        <p className="font-bold text-lg">Value used as collateral</p>
                       </div>
                     </th>
                     <td className="px-6 py-4"></td>
