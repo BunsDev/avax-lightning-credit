@@ -39,7 +39,7 @@ contract Credpix is Ownable {
 	mapping(address => mapping(address => uint256)) public debt;
 	mapping(address => mapping(address => uint256)) public collateral;
 
-	constructor(address _BRLtAddress) Ownable() {
+	constructor(address _BRLtAddress) Ownable(msg.sender) {
 		BRLtAddress = _BRLtAddress;
 		privilegedAccounts[msg.sender] = true;
 		privilegedAccounts[address(this)] = true;
