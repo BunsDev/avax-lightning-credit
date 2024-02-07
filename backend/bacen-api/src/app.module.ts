@@ -10,10 +10,10 @@ import { WalletSchema } from './schemas/wallet.schema';
 import { WalletController } from './wallets/wallets.controller.spec';
 import { WalletsModule } from './wallets/wallets.module';
 import { WalletService } from './wallets/wallets.service';
-import { TPFtSchema } from './schemas/tpft.schema';
-import { TPFtModule } from './tpft/tpft.module';
-import { TpftController } from './tpft/tpft.controller';
-import { TpftService } from './tpft/tpft.service';
+import { NTBtSchema } from './schemas/ntbt.schema';
+import { NTBtModule } from './ntbt/ntbt.module';
+import { NtbtController } from './ntbt/ntbt.controller';
+import { NtbtService } from './ntbt/ntbt.service';
 import { SelicModule } from './selic/selic.module';
 import { SelicController } from './selic/selic.controller';
 import { SelicService } from './selic/selicServices/selic.service';
@@ -27,24 +27,24 @@ import { SelicProfitCalculatorService } from './selic/selicServices/selicProfitC
     ),
     MongooseModule.forFeature([{ name: 'Bank', schema: BankSchema }]),
     MongooseModule.forFeature([{ name: 'Wallet', schema: WalletSchema }]),
-    MongooseModule.forFeature([{ name: 'TPFt', schema: TPFtSchema }]),
+    MongooseModule.forFeature([{ name: 'TPFt', schema: NTBtSchema }]),
     BankModule,
     WalletsModule,
-    TPFtModule,
+    NTBtModule,
     SelicModule,
   ],
   controllers: [
     AppController,
     BankController,
     WalletController,
-    TpftController,
+    NtbtController,
     SelicController,
   ],
   providers: [
     AppService,
     BankService,
     WalletService,
-    TpftService,
+    NtbtService,
     SelicService,
     SelicProfitCalculatorService,
   ],

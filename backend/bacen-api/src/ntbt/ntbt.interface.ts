@@ -1,6 +1,6 @@
 import { Document } from 'mongoose';
 
-export interface ITPFt extends Document {
+export interface INTBt extends Document {
   _id: string;
   name: string;
   address: string;

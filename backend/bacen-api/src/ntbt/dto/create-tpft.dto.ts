@@ -1,6 +1,6 @@
 import { IsString, IsNotEmpty, MaxLength } from 'class-validator';
 
-export class CreateTpftDto {
+export class CreateNtbtDto {
   @IsString()
   @MaxLength(100)
   @IsNotEmpty()

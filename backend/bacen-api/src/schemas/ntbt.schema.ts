@@ -13,7 +13,7 @@ class Value {
 }
 
 @Schema()
-export class TPFt extends Document {
+export class NTBt extends Document {
   @Prop({ required: true })
   name: string;
 
@@ -30,4 +30,4 @@ export class TPFt extends Document {
   assetType: string;
 }
 
-export const TPFtSchema = SchemaFactory.createForClass(TPFt);
+export const NTBtSchema = SchemaFactory.createForClass(NTBt);
