@@ -1,118 +1,152 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.19;
 
-import { FunctionsClient } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
-import { ConfirmedOwner } from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
-import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
-import "./IComputeProfit.sol"; // Ensure this interface matches the ComputeProfit contract
+import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/FunctionsClient.sol";
+import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
+import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/dev/v1_0_0/libraries/FunctionsRequest.sol";
 
-contract SelicOracle is FunctionsClient, ConfirmedOwner {
-	using FunctionsRequest for FunctionsRequest.Request;
+contract SelicRateOracle is FunctionsClient, ConfirmedOwner {
+    using FunctionsRequest for FunctionsRequest.Request;
 
-	IComputeProfit private computeProfitContract;
-	uint256 public evmProfit;
-	bytes32 public s_lastRequestId;
-	bytes public s_lastResponse;
-	bytes public s_lastError;
+    struct Rate {
+        uint256 integerPart;
+        uint256 decimalPart;
+    }
 
-	error UnexpectedRequestID(bytes32 requestId);
+    bytes32 public s_lastRequestId;
+    bytes public s_lastResponse;
+    bytes public s_lastError;
+    Rate public currentRate;
 
-	event Response(
-		bytes32 indexed requestId,
-		string character,
-		bytes response,
-		bytes err
-	);
+    string source = "const URL = https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados/ultimos/1?formato=json;"
+"const response = await Functions.makeHttpRequest({ url: URL });"
+"if (response.error) {"
+"  const returnedErr = response.response.data;"
+"  let apiErr = new Error("
+"    API returned one or more errors: ${JSON.stringify(returnedErr)}"
+"  );"
+"  apiErr.returnedErr = returnedErr;"
+"  throw apiErr;"
+"}"
+"let { data } = response;"
+"let rate = data.map((item) => item.valor)[0];"
+"rate = rate*10**6;"
+"return Functions.encodeUint256(rate)"
+;
 
-	address router = 0x6E2dc0F9DB014aE19888F539E59285D2Ea04244C;
+    error UnexpectedRequestID(bytes32 requestId);
 
-	string source =
-		"const initialDate = args[0];"
-		"const finalDate = args[1];"
-		"const apiResponse = await Functions.makeHttpRequest({"
-		"  url: 'https://api.bcb.gov.br/dados/serie/bcdata.sgs.11/dados?formato=json&dataInicial=' + initialDate + '&dataFinal=' + finalDate"
-		"});"
-		"if (apiResponse.error) {"
-		"  console.error(apiResponse.error);"
-		"  throw Error();"
-		"}"
-		"const { data } = apiResponse;"
-		"const valores = data.map(item => item.valor);"
-		"return Functions.encodeString(JSON.stringify(valores));";
+    event Response(bytes32 indexed requestId, bytes response, bytes err);
 
-	uint32 gasLimit = 300000;
+    constructor(
+        address router
+    ) FunctionsClient(router) ConfirmedOwner(msg.sender) {}
 
-	bytes32 donID =
-		0x66756e2d706f6c79676f6e2d6d756d6261692d31000000000000000000000000;
+    function getRate() external view returns (Rate memory) {
+        return currentRate;
+    }
 
-	string public character;
+    function _setCurrentRate(
+        uint256 _integerPart,
+        uint256 _decimalPart
+    ) internal {
+        currentRate.integerPart = _integerPart;
+        currentRate.decimalPart = _decimalPart;
+    }
 
-	constructor(
-		address _computeProfitAddress
-	) FunctionsClient(router) ConfirmedOwner(msg.sender) {
-		computeProfitContract = IComputeProfit(_computeProfitAddress);
-	}
+    /**
+     * @notice Send a simple request
+     * @param encryptedSecretsUrls Encrypted URLs where to fetch user secrets
+     * @param donHostedSecretsSlotID Don hosted secrets slotId
+     * @param donHostedSecretsVersion Don hosted secrets version
+     * @param args List of arguments accessible from within the source code
+     * @param bytesArgs Array of bytes arguments, represented as hex strings
+     * @param subscriptionId Billing ID
+     */
+    function sendRequest(
+        bytes memory encryptedSecretsUrls,
+        uint8 donHostedSecretsSlotID,
+        uint64 donHostedSecretsVersion,
+        string[] memory args,
+        bytes[] memory bytesArgs,
+        uint64 subscriptionId,
+        uint32 gasLimit,
+        bytes32 donID
+    ) external onlyOwner returns (bytes32 requestId) {
+        FunctionsRequest.Request memory req;
+        req.initializeRequestForInlineJavaScript(source);
+        if (encryptedSecretsUrls.length > 0)
+            req.addSecretsReference(encryptedSecretsUrls);
+        else if (donHostedSecretsVersion > 0) {
+            req.addDONHostedSecrets(
+                donHostedSecretsSlotID,
+                donHostedSecretsVersion
+            );
+        }
+        if (args.length > 0) req.setArgs(args);
+        if (bytesArgs.length > 0) req.setBytesArgs(bytesArgs);
+        s_lastRequestId = _sendRequest(
+            req.encodeCBOR(),
+            subscriptionId,
+            gasLimit,
+            donID
+        );
+        return s_lastRequestId;
+    }
 
-	function sendRequest(
-		uint64 subscriptionId,
-		string[] calldata args
-	) external onlyOwner returns (bytes32 requestId) {
-		FunctionsRequest.Request memory req;
-		req.initializeRequestForInlineJavaScript(source);
-		if (args.length > 0) req.setArgs(args);
+    /**
+     * @notice Send a pre-encoded CBOR request
+     * @param request CBOR-encoded request data
+     * @param subscriptionId Billing ID
+     * @param gasLimit The maximum amount of gas the request can consume
+     * @param donID ID of the job to be invoked
+     * @return requestId The ID of the sent request
+     */
+    function sendRequestCBOR(
+        bytes memory request,
+        uint64 subscriptionId,
+        uint32 gasLimit,
+        bytes32 donID
+    ) external returns (bytes32 requestId) {
+        s_lastRequestId = _sendRequest(
+            request,
+            subscriptionId,
+            gasLimit,
+            donID
+        );
+        return s_lastRequestId;
+    }
 
-		s_lastRequestId = _sendRequest(
-			req.encodeCBOR(),
-			subscriptionId,
-			gasLimit,
-			donID
-		);
+    /**
+     * @notice Store latest result/error
+     * @param requestId The request ID, returned by sendRequest()
+     * @param response Aggregated response from the user code
+     * @param err Aggregated error from the user code or from the execution pipeline
+     * Either response or error parameter will be set, but never both
+     */
+function fulfillRequest(
+    bytes32 requestId,
+    bytes memory response,
+    bytes memory err
+) internal override {
+    if (s_lastRequestId != requestId) {
+        revert UnexpectedRequestID(requestId);
+    }
+    s_lastResponse = response;
+    s_lastError = err;
 
-		return s_lastRequestId;
-	}
+    if (response.length > 0) {
+        uint256 combinedRate = abi.decode(response, (uint256));
 
-	function fulfillRequest(
-		bytes32 requestId,
-		bytes memory response,
-		bytes memory err
-	) internal override {
-		if (s_lastRequestId != requestId) {
-			revert UnexpectedRequestID(requestId);
-		}
+        // Assuming you are storing 6 decimal places
+        uint256 precision = 1000000; // 10^6
+        uint256 integerPart = combinedRate / precision;
+        uint256 decimalPart = combinedRate % precision;
 
-		s_lastResponse = response;
-		character = string(response);
-		s_lastError = err;
+        _setCurrentRate(integerPart, decimalPart);
+    }
 
-		emit Response(requestId, character, s_lastResponse, s_lastError);
-	}
+    emit Response(requestId, s_lastResponse, s_lastError);
+}
 
-	function computeProfit(
-		bytes memory encryptedSecretsUrls,
-		uint8 donHostedSecretsSlotID,
-		uint64 donHostedSecretsVersion,
-		bytes[] memory bytesArgs,
-		uint64 subscriptionId
-	) external onlyOwner {
-		// Prepare the arguments array
-		string[] memory args = new string[](2);
-		args[0] = character; // Use the character string from Chainlink response
-		args[1] = "100"; // Second argument is the fixed value "25000"
-
-		// Call the calculateProfit function in ComputeProfit contract
-		computeProfitContract.calculateProfit(
-			encryptedSecretsUrls,
-			donHostedSecretsSlotID,
-			donHostedSecretsVersion,
-			args,
-			bytesArgs,
-			subscriptionId,
-			gasLimit,
-			donID
-		);
-	}
-
-	function retrieveProfit() external onlyOwner {
-		evmProfit = computeProfitContract.getProfit();
-	}
 }

@@ -5,10 +5,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RealTokenizado is ERC20, ERC20Burnable, Ownable {
-	mapping(address => bool) public privilegedAccounts; //Servicos gov e bancos;
+contract BrazilianCBDC is ERC20, ERC20Burnable, Ownable {
+	mapping(address => bool) public privilegedAccounts; //Banks, institutions and government services;
 
-	constructor() ERC20("RealTokenizado", "BRLt") Ownable() {
+	constructor() ERC20("BrazilianCBDC", "BRLt") Ownable(msg.sender) {
 		privilegedAccounts[msg.sender] = true;
 	}
 
@@ -16,26 +16,26 @@ contract RealTokenizado is ERC20, ERC20Burnable, Ownable {
 		return 2;
 	}
 
-	//Modificador para restringir o acesso somente a contas privilegiadas
+	//Access control
 	modifier onlyPrivileged() {
 		require(
 			privilegedAccounts[msg.sender],
-			"Acesso negado: conta nao privilegiada"
+			"Access denied: account is not privileged."
 		);
 		_;
 	}
 
-	// Função para adicionar um endereço à lista de contas privilegiadas
+	//Add account for onlyPrivileged
 	function addPrivilegedAccount(address account) public onlyOwner {
 		privilegedAccounts[account] = true;
 	}
 
-	//Função para remover um endereço da lista de contas privilegiadas
+	//Remove account for onlyPrivileged
 	function removePrivilegedAccount(address account) public onlyOwner {
 		privilegedAccounts[account] = false;
 	}
 
-	// Função para transferir tokens de qualquer conta sem necessidade de aprovação
+	// Funtion to allow privileged accounts to make transactions
 	function privilegedTransfer(
 		address from,
 		address to,
@@ -45,7 +45,8 @@ contract RealTokenizado is ERC20, ERC20Burnable, Ownable {
 		return true;
 	}
 
-	function myntUser(
+	//Function to allow banks and financial institutions to mint tokens for their users
+	function mintUser(
 		address user,
 		uint256 amount
 	) public onlyPrivileged returns (bool) {
@@ -53,6 +54,7 @@ contract RealTokenizado is ERC20, ERC20Burnable, Ownable {
 		return true;
 	}
 
+	//Function to allow banks and financial institutions to burn tokens for their users
 	function burnUser(
 		address user,
 		uint256 amount

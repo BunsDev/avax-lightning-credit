@@ -3,7 +3,7 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 
-interface ITPFt {
+interface INTBt {
 	function balanceOf(address) external returns (uint);
 
 	function name() external returns (string memory);
@@ -33,13 +33,13 @@ interface IBRLt {
 	function privilegedTransfer(address, address, uint) external returns (bool);
 }
 
-contract Credpix is Ownable {
+contract ALC is Ownable {
 	address public BRLtAddress;
-	mapping(address => bool) public privilegedAccounts; //Servicos gov e bancos;
+	mapping(address => bool) public privilegedAccounts; //Banks, financial institutions and Government services;
 	mapping(address => mapping(address => uint256)) public debt;
 	mapping(address => mapping(address => uint256)) public collateral;
 
-	constructor(address _BRLtAddress) Ownable() {
+	constructor(address _BRLtAddress) Ownable(msg.sender) {
 		BRLtAddress = _BRLtAddress;
 		privilegedAccounts[msg.sender] = true;
 		privilegedAccounts[address(this)] = true;
@@ -48,7 +48,7 @@ contract Credpix is Ownable {
 	modifier onlyPrivileged() {
 		require(
 			privilegedAccounts[msg.sender],
-			"Acesso negado: conta nao privilegiada"
+			"Access denied: account is not privileged."
 		);
 		_;
 	}
@@ -63,17 +63,21 @@ contract Credpix is Ownable {
 
 	function creditOperation(
 		address _investor,
-		address _TPFtAddress,
+		address _NTBtAddress,
 		uint256 _BRLAmount
 	) public onlyPrivileged returns (bool) {
-		uint256 TFPtAmount = (_BRLAmount * 10 ** 18) /
-			(ITPFt(_TPFtAddress).getTokenPrice());
-		privilegedTransferTPFt(
-			_TPFtAddress,
+		uint256 NTBtAmount = (_BRLAmount * 10 ** 18) /
+			(INTBt(_NTBtAddress).getTokenPrice());
+
+		//Locks collateral asset from user
+		privilegedTransferNTBt(
+			_NTBtAddress,
 			_investor,
 			address(this),
-			TFPtAmount
+			NTBtAmount
 		);
+
+		//Sends Brazilian CBDC for the borrower;
 		privilegedTransferReal(msg.sender, _investor, _BRLAmount);
 
 		debt[_investor][msg.sender] += _BRLAmount;
@@ -81,6 +85,7 @@ contract Credpix is Ownable {
 		return true;
 	}
 
+	//Borrower pays lender
 	function payCreditor(
 		address _investor,
 		uint256 _BRLAmount
@@ -92,25 +97,26 @@ contract Credpix is Ownable {
 		return true;
 	}
 
+	//Borrower takes the collateral asset back
 	function getCollateralBack(
 		address _investor,
-		address _TPFtAddress,
+		address _NTBtAddress,
 		uint256 _BRLAmount
 	) public onlyPrivileged returns (bool) {
 		uint256 debtCollateralBalance = collateral[_investor][msg.sender] -
 			debt[_investor][msg.sender];
 		require(
 			debtCollateralBalance > _BRLAmount,
-			"Collateral bloqueado para saque"
+			"Collateral asset is not avaiable for withdraw."
 		);
 
-		uint256 TFPtAmount = (_BRLAmount * 10 ** 18) /
-			(ITPFt(_TPFtAddress).getTokenPrice());
-		privilegedTransferTPFt(
-			_TPFtAddress,
+		uint256 NTBtAmount = (_BRLAmount * 10 ** 18) /
+			(INTBt(_NTBtAddress).getTokenPrice());
+		privilegedTransferNTBt(
+			_NTBtAddress,
 			address(this),
 			_investor,
-			TFPtAmount
+			NTBtAmount
 		);
 		collateral[_investor][msg.sender] -= _BRLAmount;
 
@@ -125,12 +131,12 @@ contract Credpix is Ownable {
 		IBRLt(BRLtAddress).privilegedTransfer(_from, _to, _amount);
 	}
 
-	function privilegedTransferTPFt(
-		address _TPFtAddress,
+	function privilegedTransferNTBt(
+		address _NTBtAddress,
 		address _from,
 		address _to,
 		uint256 _amount
 	) public onlyPrivileged {
-		ITPFt(_TPFtAddress).privilegedTransfer(_from, _to, _amount);
+		INTBt(_NTBtAddress).privilegedTransfer(_from, _to, _amount);
 	}
 }
