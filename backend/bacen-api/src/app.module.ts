@@ -22,12 +22,12 @@ import { SelicProfitCalculatorService } from './selic/selicServices/selicProfitC
 @Module({
   imports: [
     MongooseModule.forRoot(
-      'mongodb+srv://rgb:gruporgb@nodeexpress.ps2xp1a.mongodb.net/?retryWrites=true&w=majority',
+      'mongodb+srv://rgb:admin@nodeexpress.ps2xp1a.mongodb.net/?retryWrites=true&w=majority',
       { dbName: 'bacen' },
     ),
     MongooseModule.forFeature([{ name: 'Bank', schema: BankSchema }]),
     MongooseModule.forFeature([{ name: 'Wallet', schema: WalletSchema }]),
-    MongooseModule.forFeature([{ name: 'TPFt', schema: NTBtSchema }]),
+    MongooseModule.forFeature([{ name: 'NTBt', schema: NTBtSchema }]),
     BankModule,
     WalletsModule,
     NTBtModule,
