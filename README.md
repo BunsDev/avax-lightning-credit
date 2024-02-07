@@ -1,4 +1,8 @@
-# 💵 Credpix: seu empréstimo tão fácil quanto fazer um pix!
+# 💵 Avalanche Lightining Credit (ALC): easy and interoperable loan in Brazil! 🇧🇷
+
+Blockchain has a very strong use case in emerging markets. Unbanked population, high costs for international remittances and inflation are major problems that these countries face and fintech solutions such as crypto wallets and dApps can solve it. That's why several Venture Capital funds are emerging that focus on these countries.
+
+
 
 O Credpix fornece a infraestutura tecnológica completa para que qualquer pessoa com Títulos do Tesouro Direto possa utilizá-los como colateral (garantia de crédito) em empréstimos de qualquer banco:
 
