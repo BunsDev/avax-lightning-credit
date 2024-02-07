@@ -50,7 +50,6 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
     ISelicRateOracle public selicRateOracle;
 
     address[] public tokenOwners;
-    mapping(address => uint256) public ownershipTimestamp;
 
     // Constructor: Called once on contract deployment
     // Check packages/hardhat/deploy/00_deploy_your_contract.ts
@@ -130,7 +129,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
     function transfer(
         address recipient,
         uint256 amount
-    ) public override onlyOwner returns (bool) {
+    ) public override returns (bool) {
         return super.transfer(recipient, amount);
     }
 
@@ -147,7 +146,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         address sender,
         address recipient,
         uint256 amount
-    ) public override onlyOwner returns (bool) {
+    ) public override onlyPrivileged returns (bool) {
         return super.transferFrom(sender, recipient, amount);
     }
 
@@ -168,6 +167,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
     }
 
     function updateCurrentPrice() external {
+    require(block.timestamp < dueDate, "Expired product. Check the due date");
 
     ISelicRateOracle.Rate memory rate = selicRateOracle.getRate();
 
@@ -190,20 +190,11 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
     }
 
     /**
-     * @dev Sets the ownership timestamp of a specific investor to the current block timestamp.
-     * @notice The function can only be called by the owner of the contract.
-     * @param _investor The address of the investor whose ownership timestamp is being set.
-     */
-    function setOwnershipTimestamp(address _investor) public onlyOwner {
-        ownershipTimestamp[_investor] = block.timestamp;
-    }
-
-    /**
      * @dev Adds the specified investor to the list of token owners.
      * @notice This function can only be called by the owner of the Debenture Token Contract.
      * @param _investor The address of the investor to add to the list of token owners.
      */
-    function addToTokenOwners(address _investor) public onlyOwner {
+    function addToTokenOwners(address _investor) public onlyPrivileged {
         tokenOwners.push(_investor);
     }
 
@@ -287,10 +278,6 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
             "Foi atingido o valor maximo da emissao desse titulo"
         );
         _mint(investor, totalAssetAmount);
-
-        if (ownershipTimestamp[investor] == 0) {
-            setOwnershipTimestamp(investor);
-        }
 
         addToTokenOwners(investor);
 
