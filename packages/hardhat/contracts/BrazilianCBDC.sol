@@ -20,7 +20,7 @@ contract BrazilianCBDC is ERC20, ERC20Burnable, Ownable {
 	modifier onlyPrivileged() {
 		require(
 			privilegedAccounts[msg.sender],
-			"Acesso negado: conta nao privilegiada"
+			"Access denied: account is not privileged."
 		);
 		_;
 	}

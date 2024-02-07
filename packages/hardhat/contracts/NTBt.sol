@@ -36,10 +36,10 @@ interface ISelicRateOracle {
 }
 
 contract NTBt is ERC20Burnable, Ownable, DSMath {
-    mapping(address => bool) public privilegedAccounts; //Contas privilegiadas (servicos e talvez bancos)
+    mapping(address => bool) public privilegedAccounts; //Privileged Accounts (financial institutions and government services)
 
     uint256 public immutable deployTimestamp;
-    address public paymentToken; //Real Tokenizado
+    address public paymentToken; //Brazilian CBDC
 
     uint256 public immutable maxAmount;
     uint256 public immutable dueDate;
@@ -85,22 +85,22 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
     modifier onlyPrivileged() {
         require(
             privilegedAccounts[msg.sender],
-            "Acesso negado: conta nao privilegiada"
+            "Access denied: account is not privileged."
         );
         _;
     }
 
-    // Função para adicionar um endereço à lista de contas privilegiadas
+    // Function to add privileged accounts
     function addPrivilegedAccount(address account) public onlyOwner {
         privilegedAccounts[account] = true;
     }
 
-    // Função para remover um endereço da lista de contas privilegiadas
+    // Function to remove privileged accounts
     function removePrivilegedAccount(address account) public onlyOwner {
         privilegedAccounts[account] = false;
     }
 
-    // Função para transferir tokens de qualquer conta sem necessidade de aprovação
+    // Function to transfer tokens without approve (just for privileged accounts)
     function privilegedTransfer(
         address from,
         address to,
@@ -110,6 +110,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         return true;
     }
 
+    // Function to transfer tokens without approve (just for privileged accounts)
     function privilegedTransferReal(
         address _from,
         address _to,
@@ -120,8 +121,6 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
 
     /**
      * @dev Transfers the specified amount of series tokens to the specified recipient.
-     * @notice This function can only be called by the owner of the Debenture Token Contract.
-     *
      * @param recipient The address of the recipient to transfer the series tokens to.
      * @param amount The amount of series tokens to transfer.
      * @return A boolean indicating whether the transfer was successful or not.
@@ -133,15 +132,6 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         return super.transfer(recipient, amount);
     }
 
-    /**
-     * @dev Transfers the specified amount of series tokens from the sender's balance to the specified recipient.
-     * @notice This function can only be called by the owner of the Debenture Token Contract.
-     *
-     * @param sender The address of the sender to transfer the series tokens from.
-     * @param recipient The address of the recipient to transfer the series tokens to.
-     * @param amount The amount of series tokens to transfer.
-     * @return A boolean indicating whether the transfer was successful or not.
-     */
     function transferFrom(
         address sender,
         address recipient,
@@ -150,22 +140,17 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         return super.transferFrom(sender, recipient, amount);
     }
 
-    /**
-     * @dev Returns the current token price for the series based on the current interest rate and the elapsed time since the series was deployed.
-     * @notice The function calculates the number of compounding periods that have elapsed based on the current time and the due date of the series.
-     * @notice It then calculates the current token price by multiplying the starting token price by (1 + interestRate) to the power of the number of compounding periods.
-     * @notice If there is any remaining time that does not fall into a full compounding period, the function calculates the remaining interest for that time and adjusts the token price accordingly.
-     * @return The current token price for the series.
-     */
     function getTokenPrice() public view returns (uint256) {
         return currentPrice;
     }
 
+    //Check interest rate from Chainlink Functions contract (from Central Bank of Brazil API)
     function getCurrentRate() public view returns (uint256, uint256) {
         ISelicRateOracle.Rate memory rate = selicRateOracle.getRate();
         return (rate.integerPart, rate.decimalPart);
     }
 
+    //Update asset price according to Selic Rate (brazilian interest rate)
     function updateCurrentPrice() external {
     require(block.timestamp < dueDate, "Expired product. Check the due date");
 
@@ -191,7 +176,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
 
     /**
      * @dev Adds the specified investor to the list of token owners.
-     * @notice This function can only be called by the owner of the Debenture Token Contract.
+     * @notice This function can only be called by privileged accounts
      * @param _investor The address of the investor to add to the list of token owners.
      */
     function addToTokenOwners(address _investor) public onlyPrivileged {
@@ -200,7 +185,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
 
     /**
      * @dev Adds the specified investor to the list of token owners.
-     * @notice This function can only be called by the owner of the Debenture Token Contract.
+     * @notice This function can only be called by privileged accounts.
      * @param _investor The address of the investor to add to the list of token owners.
      */
     function removeFromTokenOwners(address _investor) public onlyOwner {
@@ -237,16 +222,13 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
     }
 
     /**
-     * @dev Allows an investor to invest in a specific series by providing the series index and the investment value.
-     * @notice If the series index is not valid, the function reverts with an InvalidSeriesIndex error.
-     * @notice If the investment value is less than the minimum investment amount required for the series, the function reverts with an InvestmentValueBelowMinimumAmount error.
-     * @notice If the series asset type is "coupon", the function checks whether the investor has already claimed interest within the last 30 days.
-     * @notice If so, the function reverts with a MustClaimInterestToInvestAgain error.
+     * @dev Allows an investor to invest in this asset.
      * @notice The function transfers the investment value in interest tokens from the investor to the contract address.
-     * @notice It then calculates the amount of series tokens that the investor should receive based on the investment value and the current token price.
-     * @notice If the investor does not already own any series tokens, the function sets the ownership timestamp for the investor.
+     * @notice The Central Bank can set minimum investments amount and max supply.
+     * @notice It then calculates the amount of tokens that the investor should receive based on the investment value and the current token price.
      * @notice Finally, the function emits a NewInvestment event and returns true if the investment was successful.
-     * @param investmentValue The value of the investment in interest tokens.
+     * @param investor the address which will send Brazilian CBDC tokens and receive NTBt tokens.
+     * @param investmentValue The value of the investment in Brazilian CBDC.
      * @return A boolean value indicating whether the investment was successful.
      */
 
@@ -254,7 +236,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         address investor,
         uint256 investmentValue
     ) public onlyPrivileged returns (bool) {
-        require(investmentValue >= minimumInvestment, "Invista o valor minimo");
+        require(investmentValue >= minimumInvestment, "Invest more than minimum.");
 
         require(
             IBRLt(paymentToken).privilegedTransfer(
@@ -275,7 +257,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         uint256 newSupply = totalSupply() + totalAssetAmount;
         require(
             newSupply < maxAmount,
-            "Foi atingido o valor maximo da emissao desse titulo"
+            "Max supply reached."
         );
         _mint(investor, totalAssetAmount);
 
@@ -284,6 +266,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         return true;
     }
 
+    //Function to allow Central Bank of Brazil to withdraw the ammount invested in this asset
     function withdrawBacen() public onlyOwner returns (bool) {
         uint256 contractBalance = IBRLt(paymentToken).balanceOf(address(this));
         IBRLt(paymentToken).transfer(msg.sender, contractBalance);
@@ -291,6 +274,7 @@ contract NTBt is ERC20Burnable, Ownable, DSMath {
         return true;
     }
 
+    //Function to allow investor to sell his investment tokens
     function withdrawInvestor(
         address _investor,
         uint256 _BRLAmount
