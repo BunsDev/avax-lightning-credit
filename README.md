@@ -4,7 +4,7 @@ Blockchain has a very strong use case in emerging markets. Unbanked population, 
 
 In Brazil, the volume of credit operations in the National Financial System totaled more than $1 trillion USD in October 2023. However, this market could be much more efficient as Brazil has one of the most expensive credits in the world.
 
-In this scenario, Brazil has presented favorable regulation for the crypto market and Drex, the Brazilian CBDC and tokenization of public securities are already under development.
+In this scenario, Brazil has presented favorable regulation for the crypto market and Drex, the Brazilian CBDC and tokenization of National Treasury Bonds.
 
 O Credpix fornece a infraestutura tecnológica completa para que qualquer pessoa com Títulos do Tesouro Direto possa utilizá-los como colateral (garantia de crédito) em empréstimos de qualquer banco:
 
