@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { ConnectButton } from "@particle-network/connect-react-ui";
+import "@particle-network/connect-react-ui/dist/index.css";
 import { Bars3Icon } from "@heroicons/react/24/outline";
 
 interface HeaderMenuLink {
@@ -86,6 +88,9 @@ export const Header = () => {
         <ul className="hidden lg:flex lg:flex-nowrap menu menu-horizontal px-1 gap-2">
           <HeaderMenuLinks />
         </ul>
+      </div>
+      <div className="navbar-end mr-5">
+        <ConnectButton />
       </div>
     </div>
   );
