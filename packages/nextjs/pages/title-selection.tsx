@@ -5,7 +5,10 @@ import { ethers } from "ethers";
 import type { NextPage } from "next";
 import { MetaHeader } from "~~/components/MetaHeader";
 import { useGlobalState } from "~~/context/GlobalStateContext";
-import CredpixJSON from "~~/utils/Credpix.json";
+import ALCJSON from "~~/utils/ALC.json";
+import { useAccount, useParticleConnect, useParticleProvider } from '@particle-network/connect-react-ui';
+
+
 import {
   fetchTPFtByAddress,
   fetchWalletByCpfAndBank,
@@ -23,6 +26,10 @@ const TitleSelection: NextPage = () => {
   const [inputValues, setInputValues] = useState<InputValuesType>({}); // State to hold all input values
   const [isLoading, setIsLoading] = useState(false); // New state for loading status
   const [currentValue, setCurrentValue] = useState(0); // State to hold the current value of the Selic title
+  const ALCAddress = "0x7850FE6BbC5572D49edE7d9d77C3AD336E84E59b";
+  const NTBtAddress = "0xA9C5c74C998d18266118aa60CFBd9bBF89BDdb8f";
+  const ParticleProvider = useParticleProvider();
+  const account = useAccount();
 
   useEffect(() => {
     // Define an async function to fetch and filter data
@@ -67,28 +74,20 @@ const TitleSelection: NextPage = () => {
     contractAddress: string,
     abi: any,
   ) {
-    // Carregar a chave privada do arquivo .env
-    const privateKey = process.env.NEXT_PUBLIC_PRIVATE_KEY;
-    if (privateKey == null) {
-      throw new Error("Undefined private key on .env");
-    }
 
-    // Configurar o provedor e a carteira
-    const provider = new ethers.providers.JsonRpcProvider(
-      "https://solemn-spring-model.matic-testnet.quiknode.pro/093e82e684aba9fe5675ccb677bdb8d98c217239/",
-    );
+    const customProvider = new ethers.providers.Web3Provider(ParticleProvider);
+    const signer = customProvider.getSigner();
 
-    const wallet = new ethers.Wallet(privateKey, provider);
+    const ALCABI = ALCJSON.abi;
+    const ALCAddress = "0x7850FE6BbC5572D49edE7d9d77C3AD336E84E59b"
 
-    // Criar uma instância do contrato
-    const contract = new ethers.Contract(contractAddress, abi, wallet);
+    const ALCContract = new ethers.Contract(ALCAddress, ALCABI, signer);
 
-    // Chamar a função creditOperation do contrato
+    const tokenTransaction = await ALCContract.creditOperation(account, NTBtAddress, BRLAmount);
+
+    await tokenTransaction.wait();
+
     try {
-      const transaction = await contract.creditOperation(investorAddress, TPFtAddress, BRLAmount);
-
-      // Aguardar a confirmação da transação
-      await transaction.wait();
       console.log("Operação de crédito realizada com sucesso");
     } catch (error) {
       console.error("Erro ao realizar operação de crédito:", error);
@@ -163,11 +162,11 @@ const TitleSelection: NextPage = () => {
                 disabled={isLoading} // Disable the button based on isLoading state
                 onClick={() =>
                   navigateToSuccessScreen(
-                    "0x1f3dF98BECEE560181Cdf114217cc6f1cc54217f",
-                    "0x70fDD8DD7A09F6d6F7460777a631875c39d7bfCD",
+                    account!,
+                    NTBtAddress,
                     totalValueUsed.toString() + "00",
-                    "0x9f94816D0F3E95D14D9396aB497FCAF91829076E",
-                    CredpixJSON.abi,
+                    ALCAddress,
+                    ALCJSON.abi,
                   )
                 }
                 className={`bg-base-300 hover:bg-base-200 font-medium rounded-md text-sm px-10 py-2.5 ${

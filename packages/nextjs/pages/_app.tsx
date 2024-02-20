@@ -1,6 +1,6 @@
 import type { AppProps } from "next/app";
 import { WalletEntryPosition } from "@particle-network/auth";
-import { Avalanche } from "@particle-network/chains";
+import { AvalancheTestnet } from "@particle-network/chains";
 import { ModalProvider } from "@particle-network/connect-react-ui";
 import "@particle-network/connectkit/dist/index.css";
 import "@rainbow-me/rainbowkit/styles.css";
@@ -18,11 +18,11 @@ const ScaffoldEthApp = ({ Component, pageProps }: AppProps) => {
           projectId: process.env.NEXT_PUBLIC_PARTICLE_PROJECT_ID as string,
           clientKey: process.env.NEXT_PUBLIC_PARTICLE_CLIENT_KEY as string,
           appId: process.env.NEXT_PUBLIC_PARTICLE_APP_ID as string,
-          chains: [Avalanche],
+          chains: [AvalancheTestnet],
           particleWalletEntry: {
             displayWalletEntry: true, //display wallet button when connect particle success.
             defaultWalletEntryPosition: WalletEntryPosition.BR, // BR = Circle opens on bottom right
-            supportChains: [Avalanche],
+            supportChains: [AvalancheTestnet],
           },
         }}
         theme={"auto"}
