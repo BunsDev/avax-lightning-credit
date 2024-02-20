@@ -15,7 +15,7 @@ ALC is a cutting-edge platform that allows any individual with National Treasury
 - **Simplified User Journey:** Facilitating an easy 3-step loan process for users, without requiring deep technical or Web 3.0 knowledge, due to amazing Particle Connect to social logins.
 
 ## 🎥 Explore our vision and see ALC in action!
-👉 [Watch our pitch and see ALC in action!](https://youtube.com/)
+👉 [Watch our pitch and see ALC in action!](https://www.youtube.com/watch?v=jgf8ikZGVIw)
 
 ## Bacen APIs
 - Wallets by CPF (Social ID) per Financial Institution: https://bacen-api.vercel.app/wallets
@@ -27,13 +27,13 @@ ALC is a cutting-edge platform that allows any individual with National Treasury
 [Inserir link deployado aqui]()
 
 ## ✅ Test ALC Yourself!
-[Experience ALC]() firsthand with a simulation at a fictional bank:
+Experience ALC firsthand with a simulation at a fictional bank:
 
 - Connect your Wallet through Particle Connect to enjoy an amazing social login;
 - Press the button "Ask for a Loan";
 - Choose your desired loan amount;
 - Select the bonds you wish to use as collateral (Tesouro Selc, IPCA+ and so on);
-- And voilà! Secure your loan in a simple 3-step process. Try it [here]()!
+- And voilà! Secure your loan in a simple 3-step process.
 
 
 ## 👨‍💻 Authors
