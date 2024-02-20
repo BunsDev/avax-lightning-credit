@@ -33,7 +33,7 @@ A smart contract for the tokenization of National Treasury bonds. Also developed
 **2.7) function withdrawBacen:** a function used for the Central Bank to receive the Brazilian CBDC tokens from all investments made in that bond.
 
 ### 3) ALC (ALC.sol)
-Contract address on Fuji Testnet: 
+Contract address on Fuji Testnet: 0x7850FE6BbC5572D49edE7d9d77C3AD336E84E59b
 
 **3.1) struct liquidityRequest:** a Solidity struct that stores a series of relevant data from each liquidity request, such as the institution, wallet, total amount, raised amount, collateral asset, collateral smart contract, date, and a list with the liquidity providers and how much each provided.
 
