@@ -15,7 +15,7 @@ ALC is a cutting-edge platform that allows any individual with National Treasury
 - **Simplified User Journey:** Facilitating an easy 3-step loan process for users, without requiring deep technical or Web 3.0 knowledge, due to amazing Particle Connect to social logins.
 
 ## 🎥 Explore our vision and see ALC in action!
-👉 [Watch our pitch and see MAC in action!](https://youtube.com/)
+👉 [Watch our pitch and see ALC in action!](https://youtube.com/)
 
 ## Bacen APIs
 - Wallets by CPF (Social ID) per Financial Institution: https://bacen-api.vercel.app/wallets
